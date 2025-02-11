@@ -4,10 +4,12 @@ import { CommonModule } from '@angular/common';
 import { Task } from '../model/task';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { TaskService } from '../services/task.service';
+import { Subscription } from 'rxjs';
+import { TaskDetailsComponent } from './task-details/task-details.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CreateTaskComponent, CommonModule, HttpClientModule],
+  imports: [CreateTaskComponent, CommonModule, HttpClientModule, TaskDetailsComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -17,26 +19,33 @@ export class DashboardComponent implements OnInit{
   allTasks: Task[] = [];
   // allTasks = signal<Task[]>([])
   selectedTask!: Task;
-  taskServise: TaskService = inject(TaskService)
+  taskService: TaskService = inject(TaskService)
   currentTaskId: string = '';
   isLoading:boolean = false;
+  showTaskDetail: boolean = false; 
   errorMessage: string | null = null
-  
-
+  errorSub!: Subscription;
+  currentTask: Task | null = null;
 
 
   ngOnInit() {
     this.fetchAllTask()
-    this.taskServise.errorSubject.subscribe({next: (httperror) =>{
+    this.errorSub = this.taskService.errorSubject.subscribe({next: (httperror) =>{
       this.setErrorMessage(httperror);
     }})
+  }
+  ngOnDestroy(){
+    this.errorSub.unsubscribe();
+  }
+  closeTaskDetail(){
+    this.showTaskDetail = false;
   }
 
   openCreateTaskForm(){
     this.showCreateTaskForm = true;
     this.editMode = false;
 
-    this.selectedTask = {title:'', desc: '', AssignedTo: '', createrAt: '', priority: '', status: ''}
+    this.selectedTask = {title:'', desc: '', AssignedTo: '', createdAt: '', priority: '', status: ''}
   }
 
   editMode: boolean = true;
@@ -46,9 +55,9 @@ export class DashboardComponent implements OnInit{
   }
   createOrUpdateTask(data: Task){
     if(!this.editMode)
-     this.taskServise.createTask(data)
+     this.taskService.createTask(data)
     else
-     this.taskServise.updateTask(this.currentTaskId, data)
+     this.taskService.updateTask(this.currentTaskId, data)
   }
   onEditTask(id: string | undefined){
 
@@ -67,7 +76,7 @@ export class DashboardComponent implements OnInit{
   }
   private fetchAllTask(){
     this.isLoading = true;
-    this.taskServise.getAllTask().subscribe({next: (tasks) => {
+    this.taskService.getAllTask().subscribe({next: (tasks) => {
       this.allTasks = tasks;
       this.isLoading = false;
     }, error: (error) => {
@@ -86,10 +95,17 @@ export class DashboardComponent implements OnInit{
       this.errorMessage = err.message;
     }
   }
+  showCurrentTaskDetail(id: string | undefined){
+    this.showTaskDetail = true;
+    this.taskService.getTaskDetail(id).subscribe({
+      next: (data: Task) => {
+        this.currentTask = data;
+      }});
+  }
   deleteTask(id: string | undefined){
-    this.taskServise.deleteTask(id)
+    this.taskService.deleteTask(id)
   }
   deleteAllTasks(){
-    this.taskServise.deleteAllTasks();
+    this.taskService.deleteAllTasks();
   }
 }
