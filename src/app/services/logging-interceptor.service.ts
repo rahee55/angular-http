@@ -1,9 +1,16 @@
-import { Injectable } from '@angular/core';
+import { HttpInterceptorFn } from '@angular/common/http';
+// import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class LoggingInterceptorService {
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class LoggingInterceptorService {
 
-  constructor() { }
+//   constructor() { }
+// }
+
+
+export const LoggingInterceptorService: HttpInterceptorFn = (req, next) => {
+  console.log('Logging interceptor');
+  return next (req)
 }

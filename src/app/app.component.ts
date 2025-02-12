@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-root',
   imports: [HeaderComponent, DashboardComponent, FooterComponent, FormsModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'angular-http-client';

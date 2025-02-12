@@ -7,11 +7,13 @@ import { TaskService } from '../services/task.service';
 import { Subscription } from 'rxjs';
 import { TaskDetailsComponent } from './task-details/task-details.component';
 
+
 @Component({
   selector: 'app-dashboard',
   imports: [CreateTaskComponent, CommonModule, HttpClientModule, TaskDetailsComponent],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  
 })
 export class DashboardComponent implements OnInit{
   showCreateTaskForm: boolean = false;
