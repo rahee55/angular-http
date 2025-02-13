@@ -12,5 +12,6 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const LoggingInterceptorService: HttpInterceptorFn = (req, next) => {
   console.log('Logging interceptor');
+  console.log('Request sent to URL: ' + req.url);
   return next (req)
 }
